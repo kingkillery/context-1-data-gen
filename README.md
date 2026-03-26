@@ -4,6 +4,8 @@ Synthetic data generation pipeline from our [technical report](https://www.trych
 
 Generates synthetic multi-hop search tasks across multiple domainss. Each domain follows an explore → verify → extend pattern to produce multi-step retrieval tasks.
 
+Context-1 model weights are available [here](https://huggingface.co/chromadb/context-1).
+
 ## Setup
 
 ```bash
