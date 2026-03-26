@@ -1,6 +1,8 @@
-# Agentic Search Data Gen
+# Chroma Context-1 Data Generation
 
-Generates synthetic multi-hop search tasks across multiple domains using agentic LLM pipelines. Each domain follows an explore → verify → extend pattern to produce grounded, multi-step retrieval challenges.
+Synthetic data generation pipeline from our [technical report](https://www.trychroma.com/research/context-1).
+
+Generates synthetic multi-hop search tasks across multiple domainss. Each domain follows an explore → verify → extend pattern to produce multi-step retrieval tasks.
 
 ## Setup
 
