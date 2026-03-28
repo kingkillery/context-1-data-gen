@@ -12,7 +12,7 @@ from chromadb.utils.embedding_functions import Bm25EmbeddingFunction
 from dotenv import load_dotenv
 
 from .prompts import EXPLORATION_INSTRUCTION, EXPLORATION_PROMPT, TRUTH_TYPES, SEC_FORCE_OUTPUT_MESSAGE
-from ...core.utils import get_anthropic_client, count_tokens, parse_tag, get_embedding_client
+from ...core.utils import DEFAULT_LLM_MODEL, count_tokens, get_anthropic_client, parse_tag, get_embedding_client
 from ...core.rerank import BasetenReranker
 from .utils import parse_supporting_items, format_chunks
 
@@ -606,7 +606,7 @@ def run_agent_loop(
     parse_fn: Callable[[str], Dict[str, Any]],
     system_prompt: str,
     tools: List[Dict[str, Any]] = None,
-    model: str = "claude-sonnet-4-5"
+    model: str = DEFAULT_LLM_MODEL
 ) -> Dict[str, Any] | None:
     """Run the agent loop with SEC filing tools."""
     if tools is None:
@@ -692,7 +692,7 @@ def force_output(
     force_message: str,
     parse_fn: Callable[[str], Dict[str, Any]],
     system_prompt: str,
-    model: str = "claude-sonnet-4-5"
+    model: str = DEFAULT_LLM_MODEL
 ) -> Dict[str, Any] | None:
     """Force the agent to output structured response."""
     input_messages.append({"role": "user", "content": force_message})
@@ -816,7 +816,7 @@ class SecExplorerAgent:
         self,
         collection_name: str = "sec_filings",
         max_iterations: int = 30,
-        model: str = "claude-sonnet-4-5",
+        model: str = DEFAULT_LLM_MODEL,
     ):
         self.model = model
         self.client = get_anthropic_client()
@@ -1070,7 +1070,7 @@ def main():
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
     parser.add_argument("--max-iterations", "-n", type=int, default=20, help="Maximum iterations per file (default: 20)")
     parser.add_argument("--collection", type=str, default="sec_test_1_14", help="ChromaDB collection name (default: sec_test_1_14)")
-    parser.add_argument("--model", type=str, default="claude-sonnet-4-5", help="Model for exploration (default: claude-sonnet-4-5)")
+    parser.add_argument("--model", type=str, default=DEFAULT_LLM_MODEL, help=f"Model for exploration (default: {DEFAULT_LLM_MODEL})")
 
     args = parser.parse_args()
 

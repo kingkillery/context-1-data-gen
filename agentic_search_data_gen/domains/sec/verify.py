@@ -26,6 +26,7 @@ from .prompts import (
     SEC_COLLECT_TRUTH_OUTPUT_WITHOUT,
 )
 from ...core.utils import (
+    DEFAULT_VERIFY_MODEL,
     get_anthropic_client,
     text_contains_quote,
     count_matching_quotes,
@@ -1558,7 +1559,7 @@ def main():
     parser.add_argument("--input", "-i", type=str, required=True, help="Input directory containing JSON files")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of files to process in parallel (default: 8)")
     parser.add_argument("--max-retries", "-r", type=int, default=3, help="Maximum extraction retries per item on verification failure (default: 3)")
-    parser.add_argument("--model", "-m", type=str, default="claude-opus-4-5", help="Model to use (default: claude-opus-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_VERIFY_MODEL, help=f"Model to use (default: {DEFAULT_VERIFY_MODEL})")
     parser.add_argument("--mode", type=str, default="main", choices=["main", "collect"],
                         help="Verification mode: 'main' for supporting items, 'collect' for additional chunks (default: main)")
     parser.add_argument("--single-file", "-f", type=str, help="Process a single file instead of a directory")

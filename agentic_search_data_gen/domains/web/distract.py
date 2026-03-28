@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 
 from ...core.distract import BaseDistractorAgent
-from ...core.utils import get_anthropic_client
+from ...core.utils import DEFAULT_LLM_MODEL, get_anthropic_client
 from .prompts import WEB_DISTRACTORS_PROMPT, WEB_DISTRACTORS_FORCE_OUTPUT_PROMPT
 from .utils import (
     get_page, search, format_search_results,
@@ -22,7 +22,7 @@ class WebDistractorAgent(BaseDistractorAgent):
     item_id_tag = "url"
     system_prompt = "You are a helpful assistant that finds distractor pages for search tasks."
 
-    def __init__(self, model: str = "claude-sonnet-4-5", max_iterations: int = 15):
+    def __init__(self, model: str = DEFAULT_LLM_MODEL, max_iterations: int = 15):
         client = get_anthropic_client()
         super().__init__(client, model, max_iterations)
 
@@ -98,7 +98,7 @@ def main():
     parser.add_argument("--input", "-i", type=str, required=True, help="Input file path (JSON) or directory containing JSON files")
     parser.add_argument("--max-iterations", "-n", type=int, default=15, help="Maximum iterations per task (default: 15)")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
-    parser.add_argument("--model", "-m", type=str, default="claude-sonnet-4-5", help="Model to use (default: claude-sonnet-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_LLM_MODEL, help=f"Model to use (default: {DEFAULT_LLM_MODEL})")
     parser.add_argument("--level-filter", "-l", type=int, default=None, help="Level filter (default: None)")
 
     args = parser.parse_args()

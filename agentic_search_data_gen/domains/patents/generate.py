@@ -17,14 +17,14 @@ from .prompts import (
     EVAL_GEN_SYSTEM_PROMPT,
     EVAL_GEN_PROMPT
 )
-from ...core.utils import get_anthropic_client
+from ...core.utils import DEFAULT_LLM_MODEL, get_anthropic_client
 import httpx
 
 load_dotenv()
 
 
 class EvalGenNew:
-    def __init__(self, anthropic_client, model="claude-opus-4-5"):
+    def __init__(self, anthropic_client, model=DEFAULT_LLM_MODEL):
         self.anthropic_client = anthropic_client
         self.model = model
 
@@ -316,7 +316,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate eval tasks from USPTO JSON files")
     parser.add_argument("--input-dir", "-i", required=True, help="Path to input directory containing JSON files")
     parser.add_argument("--max-workers", "-w", type=int, default=6, help="Maximum number of parallel workers")
-    parser.add_argument("--model", default="claude-opus-4-5", help="Anthropic model for generation (default: claude-opus-4-5)")
+    parser.add_argument("--model", default=DEFAULT_LLM_MODEL, help=f"Anthropic-compatible model for generation (default: {DEFAULT_LLM_MODEL})")
     args = parser.parse_args()
 
     console = Console()

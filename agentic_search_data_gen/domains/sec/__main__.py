@@ -12,6 +12,7 @@ import sys
 import time
 from pathlib import Path
 
+from ...core.utils import DEFAULT_LLM_MODEL, DEFAULT_VERIFY_MODEL
 from .index import CorpusProcessor
 from .explore import SecExplorerAgent
 from .verify import run_batch as verify_run_batch, run_collect_batch as verify_run_collect_batch
@@ -102,28 +103,28 @@ def main():
                         help="SEC EDGAR identity string (e.g. 'Name email@example.com')")
 
     explore_g = parser.add_argument_group("explore")
-    explore_g.add_argument("--explore-model", default="claude-sonnet-4-5",
-                           help="Model for explore (default: claude-sonnet-4-5)")
+    explore_g.add_argument("--explore-model", default=DEFAULT_LLM_MODEL,
+                           help=f"Model for explore (default: {DEFAULT_LLM_MODEL})")
     explore_g.add_argument("--explore-max-iterations", type=int, default=20,
                            help="Max iterations for explore (default: 20)")
 
     verify_g = parser.add_argument_group("verify")
-    verify_g.add_argument("--verify-model", default="claude-opus-4-5",
-                          help="Model for verify (default: claude-opus-4-5)")
+    verify_g.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL,
+                          help=f"Model for verify (default: {DEFAULT_VERIFY_MODEL})")
     verify_g.add_argument("--verify-max-retries", type=int, default=3,
                           help="Max retries for verify (default: 3)")
 
     collect_g = parser.add_argument_group("collect")
-    collect_g.add_argument("--collect-model", default="claude-sonnet-4-5",
-                           help="Model for collect (default: claude-sonnet-4-5)")
+    collect_g.add_argument("--collect-model", default=DEFAULT_LLM_MODEL,
+                           help=f"Model for collect (default: {DEFAULT_LLM_MODEL})")
     collect_g.add_argument("--collect-max-iterations", type=int, default=15,
                            help="Max iterations for collect (default: 15)")
 
     extend_g = parser.add_argument_group("extend")
-    extend_g.add_argument("--extend-agent-model", default="claude-sonnet-4-5",
-                          help="Model for extend agent (default: claude-sonnet-4-5)")
-    extend_g.add_argument("--extend-verification-model", default="claude-opus-4-5",
-                          help="Model for extend verification (default: claude-opus-4-5)")
+    extend_g.add_argument("--extend-agent-model", default=DEFAULT_LLM_MODEL,
+                          help=f"Model for extend agent (default: {DEFAULT_LLM_MODEL})")
+    extend_g.add_argument("--extend-verification-model", default=DEFAULT_VERIFY_MODEL,
+                          help=f"Model for extend verification (default: {DEFAULT_VERIFY_MODEL})")
     extend_g.add_argument("--extend-max-iterations-phase1", type=int, default=10,
                           help="Max iterations for extend phase 1 (default: 10)")
     extend_g.add_argument("--extend-max-iterations-phase2", type=int, default=15,

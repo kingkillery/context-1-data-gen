@@ -15,6 +15,7 @@ from .prompts import (
     WEB_DISTRACTION_EXTRACTION_PROMPT_MULTIPLE,
 )
 from ...core.utils import (
+    DEFAULT_VERIFY_MODEL,
     count_matching_quotes,
     min_required_matches,
     parse_quotes,
@@ -1406,7 +1407,7 @@ def main():
     parser.add_argument("--input", "-i", type=str, required=True, help="Input directory containing JSON files")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
     parser.add_argument("--max-retries", "-r", type=int, default=3, help="Maximum extraction retries on verification failure (default: 3)")
-    parser.add_argument("--model", "-m", type=str, default="claude-opus-4-5", help="Model to use (default: claude-opus-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_VERIFY_MODEL, help=f"Model to use (default: {DEFAULT_VERIFY_MODEL})")
     parser.add_argument("--distractors", "-d", action="store_true", help="Run distractor verification instead of supporting item verification")
 
     args = parser.parse_args()

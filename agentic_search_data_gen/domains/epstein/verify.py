@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 from .prompts import EPSTEIN_EXTRACTION_PROMPT_SINGLE, EPSTEIN_COHERENCE_CHECK_PROMPT
 from .utils import get_anthropic_client
-from ...core.utils import parse_quotes
+from ...core.utils import DEFAULT_VERIFY_MODEL, parse_quotes
 from ...core.verify import BaseVerifier
 
 load_dotenv()
@@ -335,7 +335,7 @@ def main():
     parser.add_argument("--input", "-i", type=str, required=True, help="Input directory containing JSON files")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
     parser.add_argument("--max-retries", "-r", type=int, default=3, help="Maximum extraction retries on verification failure (default: 3)")
-    parser.add_argument("--model", "-m", type=str, default="claude-opus-4-5", help="Model to use (default: claude-opus-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_VERIFY_MODEL, help=f"Model to use (default: {DEFAULT_VERIFY_MODEL})")
 
     args = parser.parse_args()
 

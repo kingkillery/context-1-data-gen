@@ -12,7 +12,7 @@ from .index import run_index
 from .utils import init_utils
 from .explore import EpsteinExplorerAgent
 from .verify import EpsteinVerifier
-from ...core.utils import get_anthropic_client
+from ...core.utils import DEFAULT_LLM_MODEL, DEFAULT_VERIFY_MODEL, get_anthropic_client
 
 
 def _fmt_elapsed(seconds: float) -> str:
@@ -53,10 +53,10 @@ def main():
                         help="Max iterations per exploration (default: 20)")
 
     model_group = parser.add_argument_group("model options")
-    model_group.add_argument("--explore-model", default="claude-sonnet-4-5",
-                             help="Model for exploration (default: claude-sonnet-4-5)")
-    model_group.add_argument("--verify-model", default="claude-opus-4-5",
-                             help="Model for verification (default: claude-opus-4-5)")
+    model_group.add_argument("--explore-model", default=DEFAULT_LLM_MODEL,
+                             help=f"Model for exploration (default: {DEFAULT_LLM_MODEL})")
+    model_group.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL,
+                             help=f"Model for verification (default: {DEFAULT_VERIFY_MODEL})")
     model_group.add_argument("--embedding-model", default="text-embedding-3-small",
                              help="OpenAI embedding model (default: text-embedding-3-small)")
 

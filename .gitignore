@@ -9,3 +9,4 @@ data/
 .DS_Store
 .claude/
 .pytest_cache/
+.ipynb_checkpoints/

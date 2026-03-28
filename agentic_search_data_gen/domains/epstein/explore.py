@@ -9,6 +9,7 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 
 from ...core.explore import BaseExplorerAgent
+from ...core.utils import DEFAULT_LLM_MODEL
 from .prompts import EPSTEIN_TRUTH_TYPES, EPSTEIN_EXPLORATION_PROMPT
 from .utils import (
     hybrid_search_across_all,
@@ -113,7 +114,7 @@ class EpsteinExplorerAgent(BaseExplorerAgent):
     item_id_tag = "id"
     system_prompt = "You are a helpful assistant that creates challenging search questions based on email threads."
 
-    def __init__(self, model: str = "claude-sonnet-4-5", max_iterations: int = 20):
+    def __init__(self, model: str = DEFAULT_LLM_MODEL, max_iterations: int = 20):
         client = get_anthropic_client()
         super().__init__(client, model, max_iterations)
 
@@ -239,7 +240,7 @@ def main():
     parser.add_argument("--output", "-o", type=str, default="../data/epstein/test", help="Output directory")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum parallel workers (default: 8)")
     parser.add_argument("--max-iterations", "-i", type=int, default=20, help="Maximum iterations per exploration (default: 20)")
-    parser.add_argument("--model", "-m", type=str, default="claude-sonnet-4-5", help="Model to use (default: claude-sonnet-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_LLM_MODEL, help=f"Model to use (default: {DEFAULT_LLM_MODEL})")
 
     args = parser.parse_args()
 

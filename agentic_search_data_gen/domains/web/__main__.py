@@ -9,7 +9,7 @@ import os
 import sys
 import time
 
-from ...core.utils import get_anthropic_client
+from ...core.utils import DEFAULT_LLM_MODEL, DEFAULT_VERIFY_MODEL, get_anthropic_client
 from .explore import WebExplorerAgent
 from .verify import WebVerifier
 from .distract import WebDistractorAgent
@@ -60,19 +60,19 @@ def main():
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Parallel workers (default: 8)")
 
     explore_g = parser.add_argument_group("explore")
-    explore_g.add_argument("--explore-model", default="claude-sonnet-4-5", help="Model for explore (default: claude-sonnet-4-5)")
+    explore_g.add_argument("--explore-model", default=DEFAULT_LLM_MODEL, help=f"Model for explore (default: {DEFAULT_LLM_MODEL})")
     explore_g.add_argument("--explore-max-iterations", type=int, default=20, help="Max iterations for explore (default: 20)")
 
     verify_g = parser.add_argument_group("verify")
-    verify_g.add_argument("--verify-model", default="claude-opus-4-5", help="Model for verify (default: claude-opus-4-5)")
+    verify_g.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL, help=f"Model for verify (default: {DEFAULT_VERIFY_MODEL})")
     verify_g.add_argument("--verify-max-retries", type=int, default=3, help="Max retries for verify (default: 3)")
 
     distract_g = parser.add_argument_group("distract")
-    distract_g.add_argument("--distract-model", default="claude-sonnet-4-5", help="Model for distract (default: claude-sonnet-4-5)")
+    distract_g.add_argument("--distract-model", default=DEFAULT_LLM_MODEL, help=f"Model for distract (default: {DEFAULT_LLM_MODEL})")
     distract_g.add_argument("--distract-max-iterations", type=int, default=15, help="Max iterations for distract (default: 15)")
 
     extend_g = parser.add_argument_group("extend")
-    extend_g.add_argument("--extend-model", default="claude-sonnet-4-5", help="Model for extend (default: claude-sonnet-4-5)")
+    extend_g.add_argument("--extend-model", default=DEFAULT_LLM_MODEL, help=f"Model for extend (default: {DEFAULT_LLM_MODEL})")
     extend_g.add_argument("--extend-max-iterations", type=int, default=20, help="Max iterations for extend (default: 20)")
 
     args = parser.parse_args()

@@ -5,7 +5,7 @@ import random
 from typing import Dict, Any, List
 
 from ...core.extend import BaseExtenderAgent, get_latest_task, get_latest_verified_task
-from ...core.utils import get_anthropic_client, strip_links
+from ...core.utils import DEFAULT_LLM_MODEL, get_anthropic_client, strip_links
 from .prompts import WEB_TRUTH_TYPES, WEB_EXTENSION_PROMPT, WEB_EXTENSION_FORCE_OUTPUT_MESSAGE
 from .utils import (
     get_page, search, format_search_results, truncate_long_page,
@@ -19,7 +19,7 @@ class WebExtensionAgent(BaseExtenderAgent):
     item_id_tag = "url"
     system_prompt = "You are a helpful assistant that creates challenging questions for search based on real information."
 
-    def __init__(self, model: str = "claude-sonnet-4-5", max_iterations: int = 20):
+    def __init__(self, model: str = DEFAULT_LLM_MODEL, max_iterations: int = 20):
         client = get_anthropic_client()
         super().__init__(client, model, max_iterations)
         self.long_page_contents: Dict[str, str] = {}
@@ -170,7 +170,7 @@ def main():
     parser.add_argument("--input", "-i", type=str, required=True, help="Input directory containing JSON files from explore.py")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
     parser.add_argument("--max-iterations", "-n", type=int, default=20, help="Maximum iterations per file (default: 20)")
-    parser.add_argument("--model", "-m", type=str, default="claude-sonnet-4-5", help="Model to use (default: claude-sonnet-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_LLM_MODEL, help=f"Model to use (default: {DEFAULT_LLM_MODEL})")
 
     args = parser.parse_args()
 

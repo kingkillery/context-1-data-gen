@@ -22,7 +22,7 @@ from .prompts import (
     SEC_SUPPORTING_CLUES_INSTRUCTION, SEC_SUPPORTING_CLUES_PROMPT, SEC_SUPPORTING_CLUES_FORCE_OUTPUT,
     SEC_BRIDGING_ITEM_EXTRACTION_PROMPT, SEC_SINGLE_ITEM_EXTRACTION_PROMPT
 )
-from ...core.utils import get_anthropic_client, count_tokens, parse_tag, parse_quotes, count_matching_quotes, min_required_matches, text_contains_quote, get_embedding_client
+from ...core.utils import DEFAULT_LLM_MODEL, DEFAULT_VERIFY_MODEL, get_anthropic_client, count_tokens, parse_tag, parse_quotes, count_matching_quotes, min_required_matches, text_contains_quote, get_embedding_client
 from ...core.rerank import BasetenReranker
 from .explore import (
     SECToolExecutor, CompanySearchEngine, EXPLORE_TOOLS,
@@ -437,8 +437,8 @@ class SECBridgingAgent:
         collection_name: str = "sec_filings",
         max_iterations_phase1: int = 10,
         max_iterations_phase2: int = 15,
-        agent_model: str = "claude-sonnet-4-5",
-        verification_model: str = "claude-opus-4-5",
+        agent_model: str = DEFAULT_LLM_MODEL,
+        verification_model: str = DEFAULT_VERIFY_MODEL,
     ):
         self.client = get_anthropic_client()
         self.collection_name = collection_name
@@ -912,8 +912,8 @@ def main():
     parser.add_argument("--max-iterations-phase1", type=int, default=10, help="Maximum iterations for Phase 1 (default: 10)")
     parser.add_argument("--max-iterations-phase2", type=int, default=15, help="Maximum iterations for Phase 2 (default: 15)")
     parser.add_argument("--collection", type=str, default="sec_test_1_14", help="ChromaDB collection name (default: sec_test_1_14)")
-    parser.add_argument("--agent-model", type=str, default="claude-sonnet-4-5", help="Model for agent loops (default: claude-sonnet-4-5)")
-    parser.add_argument("--verification-model", type=str, default="claude-opus-4-5", help="Model for verification (default: claude-opus-4-5)")
+    parser.add_argument("--agent-model", type=str, default=DEFAULT_LLM_MODEL, help=f"Model for agent loops (default: {DEFAULT_LLM_MODEL})")
+    parser.add_argument("--verification-model", type=str, default=DEFAULT_VERIFY_MODEL, help=f"Model for verification (default: {DEFAULT_VERIFY_MODEL})")
     args = parser.parse_args()
 
     if not os.path.exists(args.input):

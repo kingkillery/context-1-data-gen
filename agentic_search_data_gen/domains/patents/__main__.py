@@ -9,7 +9,7 @@ import os
 import sys
 import time
 
-from ...core.utils import get_anthropic_client
+from ...core.utils import DEFAULT_LLM_MODEL, get_anthropic_client
 from .process import PatentDataProcessor, read_application_numbers
 from .extract import Extractor
 from .generate import EvalGenNew
@@ -52,10 +52,10 @@ def main():
                         help="Parallel workers for extract/generate stages (default: 4)")
 
     model_group = parser.add_argument_group("model options")
-    model_group.add_argument("--extract-model", default="claude-opus-4-5",
-                             help="Anthropic model for extraction (default: claude-opus-4-5)")
-    model_group.add_argument("--generate-model", default="claude-opus-4-5",
-                             help="Anthropic model for generation (default: claude-opus-4-5)")
+    model_group.add_argument("--extract-model", default=DEFAULT_LLM_MODEL,
+                             help=f"Anthropic-compatible model for extraction (default: {DEFAULT_LLM_MODEL})")
+    model_group.add_argument("--generate-model", default=DEFAULT_LLM_MODEL,
+                             help=f"Anthropic-compatible model for generation (default: {DEFAULT_LLM_MODEL})")
     model_group.add_argument("--embedding-model", default="text-embedding-3-small",
                              help="OpenAI embedding model for indexing (default: text-embedding-3-small)")
 

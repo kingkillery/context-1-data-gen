@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 
 from ...core.explore import BaseExplorerAgent
-from ...core.utils import get_anthropic_client, strip_links
+from ...core.utils import DEFAULT_LLM_MODEL, get_anthropic_client, strip_links
 from .prompts import WEB_TRUTH_TYPES, WEB_EXPLORATION_PROMPT, WEB_FORCE_OUTPUT_PROMPT
 from .utils import (
     get_page, search, format_search_results,
@@ -22,7 +22,7 @@ class WebExplorerAgent(BaseExplorerAgent):
     item_id_tag = "url"
     system_prompt = "You are a helpful assistant that creates challenging questions for web search based on real information."
 
-    def __init__(self, model: str = "claude-sonnet-4-5", max_iterations: int = 20):
+    def __init__(self, model: str = DEFAULT_LLM_MODEL, max_iterations: int = 20):
         client = get_anthropic_client()
         super().__init__(client, model, max_iterations)
 
@@ -170,7 +170,7 @@ def main():
     parser.add_argument("--output", "-o", type=str, required=True, help="Output directory for generated trajectories")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
     parser.add_argument("--max-iterations", "-i", type=int, default=20, help="Maximum iterations per seed (default: 20)")
-    parser.add_argument("--model", "-m", type=str, default="claude-sonnet-4-5", help="Model to use (default: claude-sonnet-4-5)")
+    parser.add_argument("--model", "-m", type=str, default=DEFAULT_LLM_MODEL, help=f"Model to use (default: {DEFAULT_LLM_MODEL})")
 
     args = parser.parse_args()
 

@@ -10,6 +10,8 @@ import tiktoken
 import chromadb
 from openai import OpenAI as OpenAIClient
 
+from ...core.utils import DEFAULT_LLM_MODEL
+
 load_dotenv()
 
 MAX_PAGE_TOKENS = 10000
@@ -255,7 +257,7 @@ def ask_agent_for_page_query(
 
     # Make request WITHOUT tools to get just a text response
     response = client.messages.create(
-        model="claude-sonnet-4-5",
+        model=DEFAULT_LLM_MODEL,
         system="You are a helpful assistant. Respond with only the search query, no other text.",
         max_tokens=200,
         messages=temp_messages

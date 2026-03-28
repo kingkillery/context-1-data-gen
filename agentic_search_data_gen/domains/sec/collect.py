@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 import chromadb
 
 from .prompts import CHUNK_COLLECTOR_SYSTEM_PROMPT, CHUNK_COLLECTOR_PROMPT, CHUNK_COLLECTOR_PROMPT_TRUTH_VER
-from ...core.utils import count_tokens, get_anthropic_client, get_embedding_client
+from ...core.utils import DEFAULT_LLM_MODEL, count_tokens, get_anthropic_client, get_embedding_client
 from ...core.rerank import BasetenReranker
 from .explore import CompanySearchEngine
 from .utils import get_latest_task, format_chunks
@@ -103,7 +103,7 @@ class ChunkCollectorAgent:
         self,
         collection_name: str = "sec_filings",
         max_iterations: int = 10,
-        model: str = "claude-sonnet-4-5",
+        model: str = DEFAULT_LLM_MODEL,
     ):
         self.collection_name = collection_name
         self.max_iterations = max_iterations
@@ -795,8 +795,8 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="claude-sonnet-4-5",
-        help="Model for collection (default: claude-sonnet-4-5)"
+        default=DEFAULT_LLM_MODEL,
+        help=f"Model for collection (default: {DEFAULT_LLM_MODEL})"
     )
 
     args = parser.parse_args()

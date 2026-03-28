@@ -10,6 +10,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "minimax-m2.7-highspeed")
+DEFAULT_VERIFY_MODEL = os.getenv("DEFAULT_VERIFY_MODEL", DEFAULT_LLM_MODEL)
+DEFAULT_CONTEXT1_BASE_URL = os.getenv("CONTEXT1_BASE_URL", "https://context1.pkking.computer")
+DEFAULT_CONTEXT1_HOSTNAME = os.getenv("CONTEXT1_HOSTNAME", "context1.pkking.computer")
+DEFAULT_FRONTIER_WS_URL = os.getenv("FRONTIER_WS_URL", "ws://127.0.0.1:4500")
+
 # Token counting
 _tiktoken_encoder = tiktoken.get_encoding("cl100k_base")
 
@@ -26,14 +32,41 @@ def parse_tag(content: str, tag: str) -> str | None:
 
 
 def get_anthropic_client():
-    """Get Anthropic client."""
-    return Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    """Get an Anthropic-compatible client, preferring MiniMax when configured."""
+    minimax_api_key = os.getenv("MINIMAX_API_KEY")
+    if minimax_api_key:
+        base_url = os.getenv("MINIMAX_BASE_URL", "https://api.minimax.io/v1")
+        return Anthropic(api_key=minimax_api_key, base_url=base_url)
+
+    anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+    if anthropic_api_key:
+        return Anthropic(api_key=anthropic_api_key)
+
+    raise RuntimeError(
+        "No LLM provider configured. Set MINIMAX_API_KEY for the default MiniMax path "
+        "or ANTHROPIC_API_KEY for the Anthropic fallback."
+    )
 
 
 def get_embedding_client():
     """Get embedding client."""
     from openai import OpenAI
     return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+def get_context1_base_url() -> str:
+    """Get the base URL for the hosted Context-1 service."""
+    return os.getenv("CONTEXT1_BASE_URL", DEFAULT_CONTEXT1_BASE_URL)
+
+
+def get_context1_hostname() -> str:
+    """Get the public hostname for the hosted Context-1 service."""
+    return os.getenv("CONTEXT1_HOSTNAME", DEFAULT_CONTEXT1_HOSTNAME)
+
+
+def get_frontier_ws_url() -> str:
+    """Get the local websocket URL for the frontier reasoning model."""
+    return os.getenv("FRONTIER_WS_URL", DEFAULT_FRONTIER_WS_URL)
 
 
 def strip_links(text: str) -> str:

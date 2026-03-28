@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn
 from rich.console import Console
 import xml.etree.ElementTree as ET
-from ...core.utils import get_anthropic_client
+from ...core.utils import DEFAULT_LLM_MODEL, get_anthropic_client
 from .prompts import (
     NON_FINAL_REJECTION_EXTRACTION_SYSTEM_PROMPT,
     NON_FINAL_REJECTION_EXTRACTION_PROMPT
@@ -24,7 +24,7 @@ class Extractor:
     _CODE_BLOCK_END = re.compile(r'```\s*$')
     _REJECTIONS_TAG = re.compile(r'<rejections>(.*?)</rejections>', re.DOTALL)
 
-    def __init__(self, anthropic_client, model="claude-opus-4-5"):
+    def __init__(self, anthropic_client, model=DEFAULT_LLM_MODEL):
         self.anthropic_client = anthropic_client
         self.model = model
 
@@ -222,7 +222,7 @@ def main():
     parser = argparse.ArgumentParser(description="Extract from USPTO JSON files")
     parser.add_argument("--input-dir", "-i", required=True, help="Path to input directory containing JSON files")
     parser.add_argument("--max-workers", "-w", type=int, default=4, help="Maximum number of parallel workers")
-    parser.add_argument("--model", default="claude-opus-4-5", help="Anthropic model for extraction (default: claude-opus-4-5)")
+    parser.add_argument("--model", default=DEFAULT_LLM_MODEL, help=f"Anthropic-compatible model for extraction (default: {DEFAULT_LLM_MODEL})")
     args = parser.parse_args()
 
     console = Console()
