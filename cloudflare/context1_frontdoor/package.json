@@ -1,0 +1,8 @@
+{
+  "name": "context1-frontdoor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-isolation=none"
+  }
+}
