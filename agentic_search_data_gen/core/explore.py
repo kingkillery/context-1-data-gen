@@ -92,21 +92,62 @@ class BaseExplorerAgent(ABC):
             "output": output
         }
 
-    def run_agent_loop(self, input_messages: List, trajectory: List, context: Dict[str, Any]) -> Dict[str, Any] | None:
+    def run_agent_loop(
+        self,
+        input_messages: List,
+        trajectory: List,
+        context: Dict[str, Any],
+        stream: bool = False
+    ) -> Dict[str, Any] | None:
         """Run the main agent loop with tools."""
+        from .context1_client import Context1Client
+        from rich.live import Live
+        from rich.markdown import Markdown
+        from rich.console import Group
+
         request_body = {
             "model": self.model,
             "system": self.system_prompt,
             "max_tokens": 20000,
             "tools": self.get_tools(),
-            "tool_choice": {"type": "auto"},
-            "thinking": {"type": "enabled", "budget_tokens": 2000}
         }
+        
+        # Anthropic-specific flags
+        if not isinstance(self.client, Context1Client):
+            request_body["tool_choice"] = {"type": "auto"}
+            request_body["thinking"] = {"type": "enabled", "budget_tokens": 2000}
+
         parsed = None
 
         for i in range(self.max_iterations):
             request_body["messages"] = input_messages
-            response = self.client.messages.create(**request_body)
+            
+            if stream:
+                full_content = ""
+                content_chunks = []
+                
+                with Live(vertical_overflow="visible") as live:
+                    if isinstance(self.client, Context1Client):
+                        # Context1Client streaming
+                        for chunk in self.client.create(**request_body, stream=True):
+                            if "choices" in chunk:
+                                delta = chunk["choices"][0].get("delta", {})
+                                text = delta.get("content", "")
+                                if text:
+                                    full_content += text
+                                    live.update(Markdown(full_content))
+                        
+                        # After stream, wrap the final content into a response object
+                        response = self.client._wrap_response({"content": [{"type": "text", "text": full_content}]})
+                    else:
+                        # Anthropic streaming
+                        with self.client.messages.stream(**request_body) as stream_mgr:
+                            for text in stream_mgr.text_stream:
+                                full_content += text
+                                live.update(Markdown(full_content))
+                            response = stream_mgr.get_final_message()
+            else:
+                response = self.client.messages.create(**request_body)
 
             tool_use_items = [item for item in response.content if getattr(item, 'type', None) == 'tool_use']
             thinking_items = [item for item in response.content if getattr(item, 'type', None) == 'thinking']
@@ -133,7 +174,7 @@ class BaseExplorerAgent(ABC):
 
             serialized_items = []
             for item in response.content:
-                serialized_item = item.model_dump(mode="python")
+                serialized_item = item.model_dump(mode="python") if hasattr(item, "model_dump") else item.__dict__
                 if 'status' in serialized_item:
                     del serialized_item['status']
                 serialized_items.append(serialized_item)

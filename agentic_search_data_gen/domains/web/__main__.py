@@ -58,10 +58,12 @@ def main():
     parser.add_argument("--collection", "-c", required=True, help="ChromaDB collection name for indexing")
     parser.add_argument("--extension-rounds", type=int, default=0, help="Number of extend rounds (default: 0)")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Parallel workers (default: 8)")
+    parser.add_argument("--stream", action="store_true", help="Enable streaming output for explore stage")
 
     explore_g = parser.add_argument_group("explore")
     explore_g.add_argument("--explore-model", default=DEFAULT_LLM_MODEL, help=f"Model for explore (default: {DEFAULT_LLM_MODEL})")
     explore_g.add_argument("--explore-max-iterations", type=int, default=20, help="Max iterations for explore (default: 20)")
+    explore_g.add_argument("--context1", action="store_true", help="Use the remote Context-1 service for explore")
 
     verify_g = parser.add_argument_group("verify")
     verify_g.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL, help=f"Model for verify (default: {DEFAULT_VERIFY_MODEL})")
@@ -104,6 +106,7 @@ def main():
     print(f"Output: {args.output}")
     print(f"Extension rounds: {args.extension_rounds}")
     print(f"Max workers: {args.max_workers}")
+    print(f"Use remote Context-1: {args.context1}")
 
     pipeline_start = time.time()
     stages = []
@@ -111,8 +114,12 @@ def main():
     # --- Stage 1: Explore ---
     _print_header("Stage 1: Explore")
     t0 = time.time()
-    explorer = WebExplorerAgent(model=args.explore_model, max_iterations=args.explore_max_iterations)
-    result = explorer.run_batch(seeds, output_dir=args.output, max_workers=args.max_workers)
+    explorer = WebExplorerAgent(
+        model=args.explore_model, 
+        max_iterations=args.explore_max_iterations,
+        use_context1=args.context1
+    )
+    result = explorer.run_batch(seeds, output_dir=args.output, max_workers=args.max_workers, stream=args.stream)
     elapsed = time.time() - t0
     _print_result(result)
     stages.append(("Explore", elapsed, result))

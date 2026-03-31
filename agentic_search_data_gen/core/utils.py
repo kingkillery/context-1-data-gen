@@ -54,6 +54,12 @@ def get_embedding_client():
     return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
+def get_context1_client():
+    """Get the Context-1 REST client."""
+    from .context1_client import Context1Client
+    return Context1Client()
+
+
 def get_context1_base_url() -> str:
     """Get the base URL for the hosted Context-1 service."""
     return os.getenv("CONTEXT1_BASE_URL", DEFAULT_CONTEXT1_BASE_URL)

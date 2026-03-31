@@ -22,8 +22,12 @@ class WebExplorerAgent(BaseExplorerAgent):
     item_id_tag = "url"
     system_prompt = "You are a helpful assistant that creates challenging questions for web search based on real information."
 
-    def __init__(self, model: str = DEFAULT_LLM_MODEL, max_iterations: int = 20):
-        client = get_anthropic_client()
+    def __init__(self, model: str = DEFAULT_LLM_MODEL, max_iterations: int = 20, use_context1: bool = False):
+        if use_context1:
+            from ...core.utils import get_context1_client
+            client = get_context1_client()
+        else:
+            client = get_anthropic_client()
         super().__init__(client, model, max_iterations)
 
     def get_tools(self) -> List[Dict[str, Any]]:
@@ -108,7 +112,7 @@ class WebExplorerAgent(BaseExplorerAgent):
     def denormalize_item(self, item: Dict[str, Any]) -> Dict[str, Any]:
         return denormalize_item(item)
 
-    def run_single(self, seed: str, output_dir: str = "../data/web/test") -> Dict[str, Any]:
+    def run_single(self, seed: str, output_dir: str = "../data/web/test", stream: bool = False) -> Dict[str, Any]:
         trajectory = []
         context = {
             "surfaced_urls": [],
@@ -130,7 +134,7 @@ class WebExplorerAgent(BaseExplorerAgent):
             "output": formatted_prompt
         })
 
-        parsed = self.run_agent_loop(input_messages, trajectory, context)
+        parsed = self.run_agent_loop(input_messages, trajectory, context, stream=stream)
 
         if parsed is None or parsed.get("question") is None:
             parsed = self.force_output(input_messages, trajectory)
@@ -150,7 +154,7 @@ class WebExplorerAgent(BaseExplorerAgent):
 
         return result
 
-    def run_batch(self, seeds: List[str], output_dir: str = "../data/web/test", max_workers: int = 8) -> Dict[str, Any]:
+    def run_batch(self, seeds: List[str], output_dir: str = "../data/web/test", max_workers: int = 8, stream: bool = False) -> Dict[str, Any]:
         def get_output_path(seed, output_dir):
             safe_filename = re.sub(r'[^\w\-_.]', '_', seed)
             return os.path.join(output_dir, f"{safe_filename}.json")
@@ -169,8 +173,10 @@ def main():
     parser.add_argument("--seeds", "-s", type=str, default="seeds.txt", help="Path to a txt file containing seed topics (one per line)")
     parser.add_argument("--output", "-o", type=str, required=True, help="Output directory for generated trajectories")
     parser.add_argument("--max-workers", "-w", type=int, default=8, help="Maximum number of parallel workers (default: 8)")
-    parser.add_argument("--max-iterations", "-i", type=int, default=20, help="Maximum iterations per seed (default: 20)")
+    parser.add_argument("--max_iterations", "-i", type=int, default=20, help="Maximum iterations per seed (default: 20)")
     parser.add_argument("--model", "-m", type=str, default=DEFAULT_LLM_MODEL, help=f"Model to use (default: {DEFAULT_LLM_MODEL})")
+    parser.add_argument("--stream", action="store_true", help="Enable streaming output")
+    parser.add_argument("--context1", action="store_true", help="Use the remote Context-1 service")
 
     args = parser.parse_args()
 
@@ -192,8 +198,8 @@ def main():
     print(f"Max iterations: {args.max_iterations}")
     print("-" * 40)
 
-    agent = WebExplorerAgent(model=args.model, max_iterations=args.max_iterations)
-    result = agent.run_batch(seeds, output_dir=args.output, max_workers=args.max_workers)
+    agent = WebExplorerAgent(model=args.model, max_iterations=args.max_iterations, use_context1=args.context1)
+    result = agent.run_batch(seeds, output_dir=args.output, max_workers=args.max_workers, stream=args.stream)
 
     print("-" * 40)
     print(f"Total: {result['total']}")
